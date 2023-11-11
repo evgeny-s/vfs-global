@@ -1,7 +1,7 @@
 name: Execute the script to check VFS global dates
 on:
-    schedule:
-      - cron: "0 * * * *" # Every hour
+  #  schedule:
+  #    - cron: "0 * * * *" # Every hour
   workflow_dispatch:
 
 jobs:
