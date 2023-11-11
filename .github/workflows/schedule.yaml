@@ -1,0 +1,35 @@
+name: Execute the script to check VFS global dates
+on:
+    schedule:
+      - cron: "0 * * * *" # Every hour
+  workflow_dispatch:
+
+jobs:
+  execute_script:
+    runs-on: [ubuntu-latest]
+    steps:
+      - uses: actions/checkout@v3
+      - name: Get Node.js version
+        id: nodejs-version
+        run: echo ::set-output name=NODE_VERSION::$(cat .nvmrc)
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ steps.nodejs-version.outputs.NODE_VERSION }}
+          registry-url: https://registry.npmjs.org/
+
+      - name: Prepare/restore cache
+        uses: actions/cache@v3
+        with:
+          path: '**/node_modules'
+          key: ${{ runner.os }}-modules-${{ hashFiles('**/package-lock.json') }}
+
+      - name: Install packages
+        run: npm ci
+        env:
+          NPM_TOKEN: ${{secrets.NPM_TOKEN_READ}}
+
+      - name: Execute
+        run: |
+          npm start
